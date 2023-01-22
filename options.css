@@ -1,0 +1,16 @@
+.content{
+   width: 20rem;
+   height: 16rem;
+   background: rgb(10, 10, 10);
+   border: 1px solid white;
+}
+
+.button-on{
+   margin: 4rem;
+   padding: 1rem 3rem;
+   background: white;
+   border: 5px solid red;
+}
+.on-service{
+   border-color: green;
+}

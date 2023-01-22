@@ -2,17 +2,14 @@
    "name": "audio-controller",
    "manifest_version" : 3,
    "version": "0.1",
-   "author": "marcelo.gomj@gmail.com",
-   "options_page": "options.html",
    "content_scripts": [
       {
         "js": ["script.js"],
         "matches": ["<all_urls>"]
       }
-    ],
-   "background" : {
-      "service_worker": "background.js",
-      "type": "module"
-   },
-   "permissions": ["tabs","activeTab"]
+   ],
+   "action": {
+      "default_popup": "options.html"
+    },
+   "permissions": ["tabs", "activeTab"]
 }

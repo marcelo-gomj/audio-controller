@@ -22,7 +22,7 @@ function captureMediaElement(elements) {
       elements.map((elem) => asyncAudioContext(audioContext, elem)) 
    )
    : (
-      asyncAudioContext(audioContext, elements)
+      [asyncAudioContext(audioContext, elements)]
    )
 }
 
@@ -44,24 +44,11 @@ const elementAudio = pipe(
    captureMediaElement
 )
 
-console.log(elementAudio('video'))
+function listenButtons(request) {
+   if(request.value){
+      elementAudio('video')
+   } 
+}
 
-// function createGainNodeFromAudioContext(mediaStream) {
-//    const audioContext = new AudioContext();
+chrome.runtime.onMessage.addListener( listenButtons );
 
-//    console.log("AUDIO-CONTEXT", audioContext);
-   
-//    const mediaElementAudioSourceNode = audioContext.createMediaElementSource(mediaStream);
-   
-//    console.log("mediaElement", mediaElementAudioSourceNode);
-
-//    const gainNode = audioContext.createGain();
-//    gainNode.gain.value = 1;
-
-//    console.log("GAIN NODE", gainNode);
-
-//    mediaElementAudioSourceNode.connect(gainNode);
-//    gainNode.connect(audioContext.destination);
-
-//    return gainNode;
-// }
