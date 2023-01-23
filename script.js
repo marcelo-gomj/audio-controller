@@ -1,10 +1,10 @@
-function pipe (...fns){
+function pipe(...fns) {
    return (value) => fns.reduce((acc, fn) => fn(acc), value)
 }
 
 function query(nameElement) {
    const isElements = document.querySelectorAll(nameElement);
-   return isElements.length === 1 ? isElements[0] : [...isElements]; 
+   return [...isElements];
 }
 
 function hasVideosElements(elements) {
@@ -12,30 +12,31 @@ function hasVideosElements(elements) {
 }
 
 function captureMediaElement(elements) {
-   if(!elements){
+   if (!elements) {
       return null
    }
-   
+
    const audioContext = new AudioContext();
 
-   return Array.isArray(elements) ? (
-      elements.map((elem) => asyncAudioContext(audioContext, elem)) 
-   )
-   : (
-      [asyncAudioContext(audioContext, elements)]
-   )
+   return elements
+      .map((element) => asyncAudioContext(audioContext, element))
+      .filter(nodesConntect => nodesConntect)
 }
 
 function asyncAudioContext(context, element) {
-   const mediaAudioSource = context.createMediaElementSource(element);
-   const gainNode = context.createGain();
+   try{
+      const mediaAudioSource = context.createMediaElementSource(element);
+      const gainNode = context.createGain();
    
-   gainNode.gain.value = 3;
-
-   mediaAudioSource.connect(gainNode)
-   gainNode.connect(context.destination)
-
-   return gainNode
+      // gainNode.gain.value = 1;
+   
+      mediaAudioSource.connect(gainNode)
+      gainNode.connect(context.destination)
+   
+      return gainNode
+   }catch(error){
+      return null
+   }
 }
 
 const elementAudio = pipe(
@@ -44,11 +45,32 @@ const elementAudio = pipe(
    captureMediaElement
 )
 
-function listenButtons(request) {
-   if(request.value){
-      elementAudio('video')
-   } 
+
+function listenButtons() {
+   let gains = elementAudio('video');
+
+   return ({ message }) => {
+      let elements = query('video');
+      if (!elements) elements = query('audio');
+      
+      if(elements && gains.length !== elements.length) {
+         const otherGainNodes = elementAudio('video')
+         gains = gains.concat(otherGainNodes);
+      } 
+
+
+      if(gains){
+         gains.map((gainNode) => {
+            if (message === 'on') gainNode.gain.value += 1;
+            if (message === 'off') gainNode.gain.value -= 1;
+   
+            console.log(gainNode.gain.value);
+         })
+      }
+   }
 }
 
-chrome.runtime.onMessage.addListener( listenButtons );
+chrome.runtime.onMessage.addListener(
+   listenButtons()
+);
 
