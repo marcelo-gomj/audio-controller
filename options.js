@@ -3,20 +3,26 @@ function query(nameElement) {
    return isElements.length === 1 ? isElements[0] : [...isElements]; 
 }
 
+function getResponseCallback(response){
+   console.log("VOLUME RESPONSE", response)
+   query('.level-volume').innerHTML = response.volume
+}
+
 function sendMessage(message) {
    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       chrome.tabs.sendMessage(
          tabs[0].id,
-         message
+         message, 
+         getResponseCallback
       )
    })
 }
 
 function onServiceVolumeBooster(message) {
-   return () => {
-      sendMessage({ message })
+   return function (){
+      console.log("DENTRO DO LISTENER", this.value)
+      sendMessage({ message, value: this.value })
    }
 }
 
-query('.button-low').addEventListener('click', onServiceVolumeBooster('off'));
-query('.button-high').addEventListener('click', onServiceVolumeBooster('on'));
+query('#volume').addEventListener('input', onServiceVolumeBooster('change'));

@@ -47,7 +47,7 @@ function listenEventsAudio() {
    let volume = 1;
    let gains = connectAudioElements(volume, query('video'));
 
-   return ({ message }, sendResponse) => {
+   return ({ message, value }, sender, sendResponse) => {
       console.log("MESSAGE = ", message)
 
       if (message === 'sync') {
@@ -56,15 +56,15 @@ function listenEventsAudio() {
          console.log('ASYNC GAINS', gains)
       }
 
-      if (message === 'on' || message === 'off') {
+      if (message === "change") {
          gains.map((gainNode) => {
-            if (message === 'on') gainNode.gain.value += 0.100;
-            if (message === 'off') gainNode.gain.value -= 0.100;
+            gainNode.gain.value = (Number(value) / 100);
 
             volume = gainNode.gain.value
          })
 
          console.log('VOLUME', volume);
+         sendResponse({ volume })
       }
    }
 }
