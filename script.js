@@ -7,70 +7,69 @@ function query(nameElement) {
    return [...isElements];
 }
 
-function hasVideosElements(elements) {
-   return elements || query('audio')
+function handleVolumeChange(volume) {
+   if (volume) {
+      sessionStorage.setItem('VOLUME', volume)
+   } else {
+      const savedVolume = sessionStorage.getItem('VOLUME');
+      return savedVolume ? Number(savedVolume) : 1;
+   }
 }
 
-function captureMediaElement(elements) {
-   if (!elements) {
-      return null
-   }
-
+function createAudioContext() {
    const audioContext = new AudioContext();
+   console.log('Criou o áudio context');
 
-   return elements
-      .map((element) => asyncAudioContext(audioContext, element))
-      .filter(nodesConntect => nodesConntect)
+   return (volume, elements) =>
+
+      elements.map((element) => {
+         try {
+            const mediaSource = audioContext.createMediaElementSource(element);
+            const gainNode = audioContext.createGain();
+
+            gainNode.gain.value = volume;
+
+            gainNode.connect(audioContext.destination)
+            mediaSource.connect(gainNode)
+
+            console.log('VOLUME ASYNC ', volume);
+
+            return gainNode
+         } catch (error) {
+            return null
+         }
+      })
+         .filter(isConnect => isConnect)
 }
 
-function asyncAudioContext(context, element) {
-   try{
-      const mediaAudioSource = context.createMediaElementSource(element);
-      const gainNode = context.createGain();
-   
-      // gainNode.gain.value = 1;
-   
-      mediaAudioSource.connect(gainNode)
-      gainNode.connect(context.destination)
-   
-      return gainNode
-   }catch(error){
-      return null
-   }
-}
+function listenEventsAudio() {
+   const connectAudioElements = createAudioContext();
+   let volume = 1;
+   let gains = connectAudioElements(volume, query('video'));
 
-const elementAudio = pipe(
-   query,
-   hasVideosElements,
-   captureMediaElement
-)
+   return ({ message }, sendResponse) => {
+      console.log("MESSAGE = ", message)
 
+      if (message === 'sync') {
+         const allMedias = gains.concat(connectAudioElements(volume, query('video')));
+         gains = allMedias;
+         console.log('ASYNC GAINS', gains)
+      }
 
-function listenButtons() {
-   let gains = elementAudio('video');
-
-   return ({ message }) => {
-      let elements = query('video');
-      if (!elements) elements = query('audio');
-      
-      if(elements && gains.length !== elements.length) {
-         const otherGainNodes = elementAudio('video')
-         gains = gains.concat(otherGainNodes);
-      } 
-
-
-      if(gains){
+      if (message === 'on' || message === 'off') {
          gains.map((gainNode) => {
-            if (message === 'on') gainNode.gain.value += 1;
-            if (message === 'off') gainNode.gain.value -= 1;
-   
-            console.log(gainNode.gain.value);
+            if (message === 'on') gainNode.gain.value += 0.100;
+            if (message === 'off') gainNode.gain.value -= 0.100;
+
+            volume = gainNode.gain.value
          })
+
+         console.log('VOLUME', volume);
       }
    }
 }
-
+const listenAudioEvents = listenEventsAudio();
 chrome.runtime.onMessage.addListener(
-   listenButtons()
+   listenAudioEvents
 );
 

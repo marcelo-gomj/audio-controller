@@ -26,6 +26,7 @@
    border: 2px solid transparent;
    background: rgb(24, 24, 24);
    transition: border-color .4s ease;
+   user-select: none;
    cursor: pointer;
 }
 
