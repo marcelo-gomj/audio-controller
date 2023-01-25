@@ -64,7 +64,7 @@ function listenEventsAudio() {
          })
 
          console.log('VOLUME', volume);
-         sendResponse({ volume })
+         sendResponse({ volume : Number(value) })
       }
    }
 }

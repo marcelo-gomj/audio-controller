@@ -4,8 +4,13 @@ function query(nameElement) {
 }
 
 function getResponseCallback(response){
-   console.log("VOLUME RESPONSE", response)
-   query('.level-volume').innerHTML = response.volume
+   if(response){
+      const { volume } = response;
+
+      console.log("VOLUME RESPONSE", volume)
+      query('.level-volume').innerHTML = volume + ' %';
+
+   }
 }
 
 function sendMessage(message) {
@@ -21,6 +26,8 @@ function sendMessage(message) {
 function onServiceVolumeBooster(message) {
    return function (){
       console.log("DENTRO DO LISTENER", this.value)
+      query('.level-fulled').style.width = `${((Number(this.value) - 1 ) / 5)}%`
+
       sendMessage({ message, value: this.value })
    }
 }
