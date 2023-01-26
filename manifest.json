@@ -13,6 +13,7 @@
       }
    ],
    "action": {
+      "default_title": "amplificar volume",
       "default_popup": "options.html"
    },
    "background": {
@@ -20,6 +21,7 @@
    },
    "permissions": [
       "tabs",
-      "activeTab"
+      "activeTab",
+      "storage"
    ]
 }

@@ -1,12 +1,25 @@
+function connectTabMessage(tabID) {
+   return (response) => {
+      chrome.tabs.sendMessage(
+         tabID,
+         response
+      )
+   }
+}
+
 chrome.tabs.onUpdated.addListener(
-   function (tabId, changeInfo, tab) {
-      console.log(changeInfo)
-      if(changeInfo.audible){
-         console.log('===ENVIOU SYNC===')
-         chrome.tabs.sendMessage(
-            tabId,
-            { message: 'sync' }
-         )
+   function (tabId, { audible }, tab) {
+      
+      const connectMessages = {
+         "sync": audible !== undefined,
+      }
+      
+      if (connectMessages) {
+         const sendMessage = connectTabMessage(tabId);
+         Object.entries(connectMessages).map(([message, value]) => {
+            if (value) sendMessage({ message, value })
+         })
+
       }
    }
 )

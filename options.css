@@ -38,7 +38,6 @@ body {
    color: white;
    border: 2px solid transparent;
    transition: border-color .4s ease;
-   user-select: none;
    cursor: pointer;
 }
 
@@ -49,6 +48,12 @@ body {
 .container-volume {
    position: relative;
    margin: 0 2rem;
+}
+
+.media-info{
+   color: white;
+   width: 100%;
+   padding: 1rem;
 }
 
 .level-volume {
@@ -77,13 +82,12 @@ body {
    background-color: rgb(20, 20, 20);
    height: 8px;
    right: 1px;
-   border-radius: 25px;
+   /* border-radius: 25px; */
    z-index: 1;
 }
 
 .level-fulled{
    position: absolute;
-   width: 20%;
    background-color: white;
    height: 8px;
    left: 1px;
@@ -93,12 +97,11 @@ body {
 
 
 input[type=range] {
-   height: 20px;
+   height: 30px;
    -webkit-appearance: none;
    background: none;
-   margin: 10px 0;
+   /* margin: 10px 0; */
    width: 100%;
-   z-index: -1;
 }
 
 input[type=range]:focus {
@@ -107,7 +110,7 @@ input[type=range]:focus {
 
 input[type=range]::-webkit-slider-runnable-track {
    width: 100%;
-   height: 8px;
+   height: 20px;
    cursor: pointer;
    animation: 0.2s;
    background: transparent;
@@ -125,11 +128,18 @@ input[type=range]::-webkit-slider-thumb {
    background: white;
    cursor: pointer;
    -webkit-appearance: none;
-   margin-top: -6px;
+   margin-top: -2px;
+   z-index: 999;
 }
 
 input[type=range]:hover::-webkit-slider-thumb {
    outline: 8px solid rgb(255, 255, 255, 0.1);
+}
+
+input[type=range]:active::-webkit-slider-thumb {
+   height: 18px;
+   width: 18px;
+   margin-top: -1px;
 }
 
 
