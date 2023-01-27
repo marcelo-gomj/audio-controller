@@ -13,16 +13,16 @@ function sendMessage(message) {
 }
 
 function onServiceVolumeBooster(message) {
-   let VOLUME = 100;
+   let volume = 100;
 
    return function (){
-      VOLUME = this.value;
-      query('.level-fulled').style.width = `${VOLUME / 5}%`
+      volume = this.value;
+      query('.level-fulled').style.width = `${volume / 5}%`
       
-      sendMessage({ message, value: VOLUME })
+      sendMessage({ message, value: volume })
 
-      query('.level-volume').innerHTML = VOLUME + ' %';
-      chrome.storage.local.set({ "volume" :  VOLUME});
+      query('.level-volume').innerHTML = volume + ' %';
+      chrome.storage.local.set({ "volume" :  volume});
    }
 }
 

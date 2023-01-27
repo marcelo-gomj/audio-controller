@@ -1,7 +1,3 @@
-function pipe(...fns) {
-   return (value) => fns.reduce((acc, fn) => fn(acc), value)
-}
-
 function query(nameElement) {
    const isElements = document.querySelectorAll(nameElement);
    return [...isElements];
@@ -14,15 +10,15 @@ function createAudioContext() {
    return (volume, elements) => {
       return elements.map((element, index) => {
          try{
-         const gainNode = audioContext.createGain();
-         const mediaSource = audioContext.createMediaElementSource(element);
+            const gainNode = audioContext.createGain();
+            const mediaSource = audioContext.createMediaElementSource(element);
 
-         gainNode.gain.value = volume;
+            gainNode.gain.value = volume;
 
-         gainNode.connect(audioContext.destination)
-         mediaSource.connect(gainNode)
+            gainNode.connect(audioContext.destination)
+            mediaSource.connect(gainNode)
 
-         return gainNode
+            return gainNode
          }catch(error){
             return;
          }
@@ -33,22 +29,34 @@ function createAudioContext() {
 
 function listenEventsAudio() {
    let volume = 1;
-   const connectAudioElements = createAudioContext();
-   let gains = connectAudioElements(volume, query('video'));
+   let connectAudioElements = null;
+   let gains = [];
 
    return ({ message, value }) => {
-      if(message === 'sync'){
-         const videos = query('video');
-         const checkVideos = gains.concat(connectAudioElements(volume, videos));
-         gains = checkVideos;
+      if(!connectAudioElements){
+         connectAudioElements = createAudioContext();
+         gains = connectAudioElements(volume, query('video'))
       }
-      
-      if(message === 'change'){
-         gains.map((gainNode) => {
-            gainNode.gain.value = (Number(value) / 100);
-            volume = gainNode.gain.value
-         })
+   
+      if(connectAudioElements){
+         if(message === 'sync'){
+            const videos = query('video');
+            const checkVideos = gains.concat(connectAudioElements(volume, videos));
+            gains = checkVideos;
+
+            console.log('VIDEOS', gains);
+         }
+         
+         if(message === 'change'){
+
+            gains.map((gainNode) => {
+               gainNode.gain.value = (Number(value) / 100);
+               volume = gainNode.gain.value
+            })
+         }
       }
+
+
    }
 }
 

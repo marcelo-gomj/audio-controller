@@ -7,7 +7,7 @@ function sendMessage(tabID, message) {
 
 chrome.tabs.onUpdated.addListener(
    function (tabId, { audible, status }, tab) {
-
+   
       if(status === "loading"){
          return;
       }
