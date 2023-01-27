@@ -12,9 +12,8 @@ function sendMessage(message) {
    })
 }
 
-let VOLUME = 34;
 function onServiceVolumeBooster(message) {
-   console.log("INICIOU...")
+   let VOLUME = 100;
 
    return function (){
       VOLUME = this.value;
@@ -32,14 +31,8 @@ query('#volume').addEventListener('input', onServiceVolumeBooster('change'));
 chrome.storage.local.get(["volume", "media_info", "media_title"], function (result){
    const { volume } = result;
 
-   console.log(result);
-
    query('#volume').value =  volume
    query('.level-volume').innerHTML = volume + ' %';
    query('.level-fulled').style.width = `${Number(volume) / 5}%`
 
-})
-
-chrome.storage.onChanged.addListener(function (param1, param2) {
-   console.log(param1, param2);
 })

@@ -11,39 +11,36 @@ function createAudioContext() {
    const audioContext = new AudioContext();
    console.log('Criou o áudio context');
 
-   return (volume, elements) =>
+   return (volume, elements) => {
+      return elements.map((element, index) => {
+         try{
+         const gainNode = audioContext.createGain();
+         const mediaSource = audioContext.createMediaElementSource(element);
 
-      elements.map((element) => {
-         try {
-            const mediaSource = audioContext.createMediaElementSource(element);
-            const gainNode = audioContext.createGain();
+         gainNode.gain.value = volume;
 
-            gainNode.gain.value = volume;
+         gainNode.connect(audioContext.destination)
+         mediaSource.connect(gainNode)
 
-            gainNode.connect(audioContext.destination)
-            mediaSource.connect(gainNode)
-
-
-            return gainNode
-         } catch (error) {
-            return null
+         return gainNode
+         }catch(error){
+            return;
          }
       })
          .filter(isConnect => isConnect)
-}
+}}
+
 
 function listenEventsAudio() {
-   const connectAudioElements = createAudioContext();
    let volume = 1;
+   const connectAudioElements = createAudioContext();
    let gains = connectAudioElements(volume, query('video'));
 
    return ({ message, value }) => {
       if(message === 'sync'){
-         const videos = query('video')
-         if(videos.length !== gains.length){
-            const allMedias = gains.concat(connectAudioElements(volume, videos));
-            gains = allMedias;
-         }
+         const videos = query('video');
+         const checkVideos = gains.concat(connectAudioElements(volume, videos));
+         gains = checkVideos;
       }
       
       if(message === 'change'){
