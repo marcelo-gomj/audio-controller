@@ -12,27 +12,40 @@ function sendMessage(message) {
    })
 }
 
-function onServiceVolumeBooster(message) {
-   let volume = 100;
-
+function onServiceVolumeBooster(message, level, levelFulled) {
    return function (){
-      volume = this.value;
-      query('.level-fulled').style.width = `${volume / 5}%`
-      
-      sendMessage({ message, value: volume })
+      const volume  = this.value;
 
-      query('.level-volume').innerHTML = volume + ' %';
-      chrome.storage.local.set({ "volume" :  volume});
+      sendMessage({ message, value : volume })
+      levelFulled.style.width = `${volume / 5}%`
+      level.textContent = volume + ' %';
+      
+      chrome.storage.local.set({ "volume" :  volume });
    }
 }
 
-query('#volume').addEventListener('input', onServiceVolumeBooster('change'));
+function getStorageInformations(range, level, levelFulled) {
+   return ({ volume }) => {
+      range.value =  volume;
+      level.textContent = volume + ' %';
+      levelFulled.style.width = `${ Number(volume) / 5 }%`
+   }
+}
 
-chrome.storage.local.get(["volume", "media_info", "media_title"], function (result){
-   const { volume } = result;
+const rangeInput = query('#volume');
+const levelVolume = query('.level-volume');
+const levelFulled = query('.level-fulled');
 
-   query('#volume').value =  volume
-   query('.level-volume').innerHTML = volume + ' %';
-   query('.level-fulled').style.width = `${Number(volume) / 5}%`
+query('#volume').addEventListener('input', onServiceVolumeBooster(
+   'change', 
+   levelVolume,
+   levelFulled
+));   
+   
+const informations = ["volume", "media_info", "media_title"];
 
-})
+chrome.storage.local.get( informations, getStorageInformations(
+   rangeInput, 
+   levelVolume,
+   levelFulled
+))

@@ -5,7 +5,6 @@ function query(nameElement) {
 
 function createAudioContext() {
    const audioContext = new AudioContext();
-   console.log('Criou o áudio context');
 
    return (volume, elements) => {
       return elements.map((element, index) => {
@@ -28,6 +27,7 @@ function createAudioContext() {
 
 
 function listenEventsAudio() {
+   chrome.storage.local.set({ "volume" :  100});
    let volume = 1;
    let connectAudioElements = null;
    let gains = [];
@@ -65,3 +65,27 @@ const listenAudioEvents = listenEventsAudio();
 chrome.runtime.onMessage.addListener(
    listenAudioEvents
 );
+
+if(chrome.tabCapture){
+   chrome.tabCapture.capture({audio: true}, (stream) => {
+      // Obtém o contexto de áudio
+      let audioContext = new window.AudioContext();
+      
+      // Cria o gain node
+      let gainNode = audioContext.createGain();
+      
+      // Conecta o gain node ao contexto de áudio
+      gainNode.connect(audioContext.destination);
+      
+      // Obtém o fluxo de áudio da tab capturada
+      let source = audioContext.createMediaStreamSource(stream);
+      
+      // Conecta o fluxo de áudio à entrada do gain node
+      source.connect(gainNode);
+      console.log("passou")
+      // Controla o volume do som aqui
+      gainNode.gain.value = 5;
+    });
+
+}
+ 
